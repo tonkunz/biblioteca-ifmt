@@ -12,6 +12,7 @@ public class Livro {
 
 
     public Livro() {
+        this.id = UUID.randomUUID().toString();
     }
 
 
