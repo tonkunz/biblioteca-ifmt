@@ -1,8 +1,6 @@
 package br.edu.biblioteca.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,65 +13,46 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.biblioteca.entities.Livro;
+import br.edu.biblioteca.services.LivrosService;
 
 @RestController
 @RequestMapping("/livros")
 public class LivrosController {
+    
+    private final LivrosService livrosService;
 
-    List<Livro> listaLivros = new ArrayList<>();
+    public LivrosController(LivrosService livrosService) {
+        this.livrosService = livrosService;
+    }
 
     @PostMapping
     public ResponseEntity<Livro> criar(@RequestBody Livro novoLivro) {
-        this.listaLivros.add(novoLivro);
+        Livro livro = livrosService.criarLivro(novoLivro);
 
-        return ResponseEntity.status(201).body(novoLivro);
+        return ResponseEntity.status(201).body(livro);
     }
 
     @GetMapping
     public ResponseEntity<List<Livro>> listar() {
-        return ResponseEntity.status(200).body(this.listaLivros);
+        return ResponseEntity.status(200).body(this.livrosService.listarLivros());
     }
 
     @GetMapping("{id}")
     public ResponseEntity<Livro> buscar(@PathVariable String id) {
-        Optional<Livro> livroSelecionado = this.listaLivros
-                .stream()
-                .filter(item -> item.getId().equals(id))
-                .findFirst();
+        Livro livroSelecionado = livrosService.buscarLivro(id);
 
-        if (!livroSelecionado.isPresent()) {
-            return ResponseEntity.status(404).build();
-        }
-
-        return ResponseEntity.status(200).body(livroSelecionado.get());
+        return ResponseEntity.status(200).body(livroSelecionado);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Livro> editar(@PathVariable String id, @RequestBody Livro livroEditado) {
-        Optional<Livro> livroSelecionado = this.listaLivros
-                .stream()
-                .filter(item -> item.getId().equals(id))
-                .findFirst();
-
-        if (!livroSelecionado.isPresent()) {
-            return ResponseEntity.status(404).build();
-        }
-
-        livroSelecionado.get().setAutor(livroEditado.getAutor());
-        livroSelecionado.get().setTitulo(livroEditado.getTitulo());
-        livroSelecionado.get().setIsbn(livroEditado.getIsbn());
-        livroSelecionado.get().setResumo(livroEditado.getResumo());
-
-        return ResponseEntity.status(200).body(livroSelecionado.get());
+        Livro novoLivro = livrosService.editarLivro(id, livroEditado);
+        return ResponseEntity.status(200).body(novoLivro);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity excluir(@PathVariable String id) {
-        this.listaLivros = this.listaLivros
-            .stream()
-            .filter(item -> !item.getId().equals(id))
-            .toList();
-        
+        livrosService.excluirLivro(id);
         return ResponseEntity.status(204).build();
     }
 }
