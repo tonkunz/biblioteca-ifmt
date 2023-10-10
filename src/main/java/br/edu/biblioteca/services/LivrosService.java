@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import br.edu.biblioteca.entities.Livro;
-import br.edu.biblioteca.exceptions.RegistroNullExcepetion;
+import br.edu.biblioteca.exceptions.RegistroNaoEncontradoException;
 
 @Service
 public class LivrosService {
@@ -31,7 +31,7 @@ public class LivrosService {
                 .findFirst();
 
         if (!livroSelecionado.isPresent()) {
-            throw new RegistroNullExcepetion();
+            throw new RegistroNaoEncontradoException("Livro com o id " + id + " não foi encontrado!");
         }
 
         return livroSelecionado.get();
