@@ -2,13 +2,18 @@ package br.edu.biblioteca.entities;
 
 import java.util.UUID;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "livros")
 public class Livro {
     
+    @Id
     private String id;
     private String titulo;
     private String autor;
-    private String isbn;
-    private String resumo;
 
 
     public Livro() {
@@ -16,12 +21,10 @@ public class Livro {
     }
 
 
-    public Livro(String titulo, String autor, String isbn, String resumo) {
+    public Livro(String titulo, String autor) {
         this.id = UUID.randomUUID().toString();
         this.titulo = titulo;
         this.autor = autor;
-        this.isbn = isbn;
-        this.resumo = resumo;
     }
     
 
@@ -49,21 +52,5 @@ public class Livro {
 
     public void setAutor(String autor) {
         this.autor = autor;
-    }
-
-    public String getIsbn() {
-        return this.isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public String getResumo() {
-        return this.resumo;
-    }
-
-    public void setResumo(String resumo) {
-        this.resumo = resumo;
     }
 }

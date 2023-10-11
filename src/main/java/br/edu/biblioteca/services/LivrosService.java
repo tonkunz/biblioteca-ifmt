@@ -8,57 +8,52 @@ import org.springframework.stereotype.Service;
 
 import br.edu.biblioteca.entities.Livro;
 import br.edu.biblioteca.exceptions.RegistroNaoEncontradoException;
+import br.edu.biblioteca.repositories.LivrosRepository;
 
 @Service
 public class LivrosService {
-    
-    List<Livro> listaLivros = new ArrayList<>();
+
+    private final LivrosRepository livrosRepository;
+
+    public LivrosService(LivrosRepository livrosRepository) {
+        this.livrosRepository = livrosRepository;
+    }
 
     public Livro criarLivro(Livro novoLivro) {
-        listaLivros.add(novoLivro);
-
+        livrosRepository.save(novoLivro);
         return novoLivro;
     }
 
-    public List<Livro> listarLivros() {
-        return listaLivros;
+    public List<Livro> listarLivros(String filtro) {
+        return livrosRepository.findAllByTituloContainingIgnoreCase(filtro);
     }
 
     public Livro buscarLivro(String id) {
-        Optional<Livro> livroSelecionado = this.listaLivros
-                .stream()
-                .filter(item -> item.getId().equals(id))
-                .findFirst();
+        Livro livro = livrosRepository
+                .findById(id)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("O registro com o id " + id + "Não foi encontrado"));
 
-        if (!livroSelecionado.isPresent()) {
-            throw new RegistroNaoEncontradoException("Livro com o id " + id + " não foi encontrado!");
-        }
-
-        return livroSelecionado.get();
+        return livro;
     }
 
     public Livro editarLivro(String id, Livro livroEditado) {
-        Optional<Livro> livroSelecionado = this.listaLivros
-                .stream()
-                .filter(item -> item.getId().equals(id))
-                .findFirst();
+        Livro livroSelecionado = livrosRepository
+            .findById(id)
+            .orElseThrow(() -> new RegistroNaoEncontradoException("Registro não encontrado"));
 
-        if (!livroSelecionado.isPresent()) {
-            return null;
-        }
+        livroSelecionado.setAutor(livroEditado.getAutor());
+        livroSelecionado.setTitulo(livroEditado.getTitulo());
 
-        livroSelecionado.get().setAutor(livroEditado.getAutor());
-        livroSelecionado.get().setTitulo(livroEditado.getTitulo());
-        livroSelecionado.get().setIsbn(livroEditado.getIsbn());
-        livroSelecionado.get().setResumo(livroEditado.getResumo());
+        livrosRepository.save(livroSelecionado);
 
-        return livroSelecionado.get();
+        return livroSelecionado;
     }
 
     public void excluirLivro(String id) {
-        this.listaLivros = this.listaLivros
-            .stream()
-            .filter(item -> !item.getId().equals(id))
-            .toList();
+        Livro livro = livrosRepository
+            .findById(id)
+            .orElseThrow(() -> new RegistroNaoEncontradoException("Registro não encontrado"));
+
+        livrosRepository.delete(livro);
     }
- }
+}

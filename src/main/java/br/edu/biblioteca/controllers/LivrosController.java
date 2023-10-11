@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.biblioteca.entities.Livro;
@@ -33,8 +34,8 @@ public class LivrosController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Livro>> listar() {
-        return ResponseEntity.status(200).body(this.livrosService.listarLivros());
+    public ResponseEntity<List<Livro>> listar(@RequestParam(defaultValue = "") String filtro) {
+        return ResponseEntity.status(200).body(this.livrosService.listarLivros(filtro));
     }
 
     @GetMapping("{id}")
