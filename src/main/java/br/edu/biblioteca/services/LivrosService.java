@@ -1,8 +1,6 @@
 package br.edu.biblioteca.services;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -31,15 +29,16 @@ public class LivrosService {
     public Livro buscarLivro(String id) {
         Livro livro = livrosRepository
                 .findById(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("O registro com o id " + id + "Não foi encontrado"));
+                .orElseThrow(
+                        () -> new RegistroNaoEncontradoException("O registro com o id " + id + "Não foi encontrado"));
 
         return livro;
     }
 
     public Livro editarLivro(String id, Livro livroEditado) {
         Livro livroSelecionado = livrosRepository
-            .findById(id)
-            .orElseThrow(() -> new RegistroNaoEncontradoException("Registro não encontrado"));
+                .findById(id)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Registro não encontrado"));
 
         livroSelecionado.setAutor(livroEditado.getAutor());
         livroSelecionado.setTitulo(livroEditado.getTitulo());
@@ -51,8 +50,8 @@ public class LivrosService {
 
     public void excluirLivro(String id) {
         Livro livro = livrosRepository
-            .findById(id)
-            .orElseThrow(() -> new RegistroNaoEncontradoException("Registro não encontrado"));
+                .findById(id)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Registro não encontrado"));
 
         livrosRepository.delete(livro);
     }
